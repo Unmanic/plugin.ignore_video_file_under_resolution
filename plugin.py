@@ -270,16 +270,26 @@ def on_library_management_file_test(data):
     # Get the test resolution
     test_resolution = get_test_resolution(settings)
 
+    limit_label = default_resolutions.get(settings.get_setting('target_resolution'), {}).get('label')
+    limit_width = default_resolutions.get(settings.get_setting('target_resolution'), {}).get('width')
+    limit_height = default_resolutions.get(settings.get_setting('target_resolution'), {}).get('height')
     if int(vid_width) < int(test_resolution['width']) or int(vid_height) < int(test_resolution['height']):
         # Ignore this file
         data['add_file_to_pending_tasks'] = False
-        limit_label = default_resolutions.get(settings.get_setting('target_resolution'), {}).get('label')
-        limit_width = default_resolutions.get(settings.get_setting('target_resolution'), {}).get('width')
-        limit_height = default_resolutions.get(settings.get_setting('target_resolution'), {}).get('height')
         logger.debug(
-            "File '{}' should be ignored - resolution {}x{} is under the set limit of {} {}x{}.".format(abspath,
-                                                                                                        vid_width,
-                                                                                                        vid_height,
-                                                                                                        limit_label,
-                                                                                                        limit_width,
-                                                                                                        limit_height))
+            "File '%s' should be ignored - resolution %sx%s is under the set limit of %s %sx%s.",
+            abspath,
+            vid_width,
+            vid_height,
+            limit_label,
+            limit_width,
+            limit_height)
+        return
+    logger.debug(
+        "File '%s' will not be ignored - resolution %sx%s is over the set limit of %s %sx%s.",
+        abspath,
+        vid_width,
+        vid_height,
+        limit_label,
+        limit_width,
+        limit_height)
